@@ -2,7 +2,7 @@
 
 Editor de imágenes no destructivo, 100% en el navegador, construido con React + Vite + TypeScript + Tailwind v4 + Zustand.
 
-## Arrancar
+## Arrancar 
 
 ```bash
 npm install
