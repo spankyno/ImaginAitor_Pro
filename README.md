@@ -2,7 +2,7 @@
 
 Editor de imágenes no destructivo, 100% en el navegador, construido con React + Vite + TypeScript + Tailwind v4 + Zustand.
 
-## Arrancar 
+## Arrancar
 
 ```bash
 npm install
@@ -62,9 +62,22 @@ El fallback de Cloudflare Pages para el enrutado cliente vive en `public/_redire
 
 `components/Layout/Footer.tsx` tiene dos variantes: `compact` (barra fina bajo el editor) y `full` (usada en `/acerca-de`). Copyright, enlace interno a "Acerca de" vía React Router, y enlaces externos a Contacto/Blog/Más apps.
 
+## Edición interactiva sobre el lienzo
+
+- **Recorte**: asas arrastrables (8 handles + mover) sobre la imagen original, con grid de regla de tercios. Vive en `components/Canvas/overlays/CropOverlay.tsx`, construido sobre el `DraggableRect` genérico.
+- **Pixelado**: arrastra directamente sobre el lienzo para crear la zona a ocultar; una vez creada, se redimensiona/mueve con el mismo `DraggableRect`.
+- **Texto y formas**: totalmente interactivos vía **Konva** (`overlays/KonvaLayerEditor.tsx`) — arrastrar, redimensionar/rotar con asas (Transformer), selección múltiple con Shift+clic, eliminar con Supr/Backspace. Konva se carga con `React.lazy` (chunk `vendor-konva`, ~97KB gzip) solo cuando se abre la pestaña Texto o Formas — el resto de la app no paga ese coste.
+- Los sliders de cada panel siguen ahí como método alternativo/preciso: ambos caminos escriben en el mismo `EditOperation`, así que siempre están sincronizados.
+- `hooks/useFitSize.ts` calcula el tamaño "contain" exacto en píxeles (en vez de `object-fit` implícito), lo que permite mapear coordenadas de puntero a espacio normalizado [0,1] de forma correcta a cualquier nivel de zoom/pan.
+- `hooks/useBaseLayerPreview.ts` renderiza una vista sin texto/formas horneados mientras esas herramientas están activas, para que Konva sea la única representación visual de esas capas (evita el "doble dibujo").
+
+## Miniaturas en streaming
+
+Las miniaturas del filmstrip corren en su **propio Web Worker** (`workers/thumbnail.worker.ts`) con una cola FIFO de baja concurrencia (`lib/thumbnailQueue.ts`, pool de 2), totalmente desacoplado del worker de renderizado principal. Al importar un lote grande (p. ej. 300 imágenes), las miniaturas se generan en paralelo y van apareciendo progresivamente, y solo la imagen que realmente se activa dispara un render de previsualización a resolución completa (carga perezosa vía `setActive`).
+
 ## Extensiones naturales (siguiente iteración)
 
-- Recorte interactivo con asas arrastrables directamente sobre el canvas (hoy el recorte se ajusta por sliders — la lógica del motor ya soporta cualquier región, solo falta la interacción de arrastre).
-- Selección de zona de pixelado/formas/texto arrastrando sobre el lienzo en vez de sliders.
-- Integración de `fabric.js`/`konva.js` si se quiere edición de capas de texto/formas totalmente interactiva (arrastrar, redimensionar con asas, múltiples capas seleccionables a la vez).
-- Streaming de miniaturas por lotes con su propio Web Worker en cola.
+- Multi-select con arrastre de marco (marquee selection) en el editor Konva, además del Shift+clic actual.
+- Snapping/alineación (a bordes, centro, otras capas) al arrastrar texto o formas.
+- Feature-detection de soporte AVIF en el navegador antes de ofrecerlo como opción de exportación.
+- Prerenderizado de `/acerca-de` en build time si se necesita que las tarjetas Open Graph de esa ruta concreta difieran de las de `/`.
