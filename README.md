@@ -44,6 +44,24 @@ npm run preview
 - Atajos Ctrl+Z / Ctrl+Shift+Z.
 - Orientación EXIF automática.
 
+## Rutas
+
+- `/` — editor.
+- `/acerca-de` — página "Acerca de" (proyecto, herramientas, stack, autor).
+
+El fallback de Cloudflare Pages para el enrutado cliente vive en `public/_redirects` (`/* /index.html 200`), imprescindible para que `/acerca-de` funcione en recarga directa o enlace compartido.
+
+## SEO
+
+- `index.html`: `<html lang="es">`, título orientado a palabras clave, metadescripción, `<meta name="author">`, `google-site-verification`, Open Graph, Twitter Card y JSON-LD (`SoftwareApplication` + `Person` + `WebSite`).
+- **Importante**: coloca tu `og-image.png` (1200×630 recomendado) en `public/og-image.png` — el HTML ya referencia esa ruta pero el archivo no viaja en este export.
+- `public/robots.txt` y `public/sitemap.xml` con las dos rutas actuales.
+- `public/manifest.webmanifest` básico.
+
+## Footer
+
+`components/Layout/Footer.tsx` tiene dos variantes: `compact` (barra fina bajo el editor) y `full` (usada en `/acerca-de`). Copyright, enlace interno a "Acerca de" vía React Router, y enlaces externos a Contacto/Blog/Más apps.
+
 ## Extensiones naturales (siguiente iteración)
 
 - Recorte interactivo con asas arrastrables directamente sobre el canvas (hoy el recorte se ajusta por sliders — la lógica del motor ya soporta cualquier región, solo falta la interacción de arrastre).
