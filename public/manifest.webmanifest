@@ -1,0 +1,12 @@
+{
+  "name": "ImaginAitor_Pro — Editor de Imágenes Online",
+  "short_name": "ImaginAitor_Pro",
+  "description": "Editor de imágenes no destructivo, 100% en el navegador.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0b0d",
+  "theme_color": "#0b0b0d",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
