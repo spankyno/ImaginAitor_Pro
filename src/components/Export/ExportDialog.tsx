@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Slider } from '../Panels/Slider'
 import { X, Download } from 'lucide-react'
 import { toast } from 'sonner'
 import { useEditorStore } from '../../store/useEditorStore'
@@ -116,20 +117,10 @@ export function ExportDialog({ docId, onClose }: { docId: string; onClose: () =>
           </div>
 
           {format !== 'png' && (
-            <div>
-              <div className="mb-1 flex justify-between text-xs text-text-muted">
-                <span>Calidad</span><span>{Math.round(quality * 100)}%</span>
-              </div>
-              <input type="range" min={0.1} max={1} step={0.01} value={quality} onChange={(e) => setQuality(Number(e.target.value))} className="w-full" />
-            </div>
+            <Slider label="Calidad" unit="%" min={0.1} max={1} step={0.01} scale={100} value={quality} onChange={setQuality} />
           )}
 
-          <div>
-            <div className="mb-1 flex justify-between text-xs text-text-muted">
-              <span>Escala de exportación</span><span>{Math.round(scale * 100)}%</span>
-            </div>
-            <input type="range" min={0.1} max={2} step={0.05} value={scale} onChange={(e) => setScale(Number(e.target.value))} className="w-full" />
-          </div>
+          <Slider label="Escala de exportación" unit="%" min={0.1} max={2} step={0.05} scale={100} value={scale} onChange={setScale} />
 
           <div className="flex items-center justify-between rounded-lg bg-bg-panel-2 px-3 py-2.5 text-xs">
             <span className="text-text-muted">Original: {formatBytes(ds.doc.source.originalSize)}</span>

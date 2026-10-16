@@ -43,10 +43,10 @@ export function TextPanel({ docId }: { docId: string }) {
               ))}
             </div>
           </div>
-          <Slider label="Tamaño" min={8} max={200} value={last.params.fontSize} onChange={(v) => updateOp(docId, last.id, { fontSize: v })} />
-          <Slider label="Rotación" min={-180} max={180} value={last.params.rotation} onChange={(v) => updateOp(docId, last.id, { rotation: v })} />
-          <Slider label="Posición X" min={0} max={1} step={0.01} value={last.params.x} onChange={(v) => updateOp(docId, last.id, { x: v })} />
-          <Slider label="Posición Y" min={0} max={1} step={0.01} value={last.params.y} onChange={(v) => updateOp(docId, last.id, { y: v })} />
+          <Slider label="Tamaño" min={8} max={200} unit="px" value={last.params.fontSize} onChange={(v) => updateOp(docId, last.id, { fontSize: v })} />
+          <Slider label="Rotación" min={-180} max={180} unit="°" value={last.params.rotation} onChange={(v) => updateOp(docId, last.id, { rotation: v })} />
+          <Slider label="Posición X" min={0} max={1} step={0.01} scale={100} decimals={1} unit="%" value={last.params.x} onChange={(v) => updateOp(docId, last.id, { x: v })} />
+          <Slider label="Posición Y" min={0} max={1} step={0.01} scale={100} decimals={1} unit="%" value={last.params.y} onChange={(v) => updateOp(docId, last.id, { y: v })} />
           <div className="flex gap-3 text-xs text-text-muted">
             <label className="flex items-center gap-1"><input type="checkbox" checked={last.params.bold} onChange={(e) => updateOp(docId, last.id, { bold: e.target.checked })} /> Negrita</label>
             <label className="flex items-center gap-1"><input type="checkbox" checked={last.params.italic} onChange={(e) => updateOp(docId, last.id, { italic: e.target.checked })} /> Cursiva</label>

@@ -83,3 +83,8 @@ input[type="range"]::-webkit-slider-runnable-track {
   0%, 100% { transform: translate(0, 0); }
   50% { transform: translate(-2%, 2%); }
 }
+
+/* Numeric text boxes next to sliders: hide native spinners (arrow keys still work) */
+input.num-input { -moz-appearance: textfield; appearance: textfield; }
+input.num-input::-webkit-outer-spin-button,
+input.num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }

@@ -37,13 +37,13 @@ export function ShapesPanel({ docId }: { docId: string }) {
               <input type="checkbox" checked={last.params.fill} onChange={(e) => updateOp(docId, last.id, { fill: e.target.checked })} /> Relleno
             </label>
           </div>
-          <Slider label="Grosor" min={1} max={40} value={last.params.strokeWidth} onChange={(v) => updateOp(docId, last.id, { strokeWidth: v })} />
-          <Slider label="Rotación" min={-180} max={180} value={last.params.rotation} onChange={(v) => updateOp(docId, last.id, { rotation: v })} />
+          <Slider label="Grosor" min={1} max={40} unit="px" value={last.params.strokeWidth} onChange={(v) => updateOp(docId, last.id, { strokeWidth: v })} />
+          <Slider label="Rotación" min={-180} max={180} unit="°" value={last.params.rotation} onChange={(v) => updateOp(docId, last.id, { rotation: v })} />
           <div className="grid grid-cols-2 gap-3">
-            <Slider label="X" min={0} max={1} step={0.01} value={last.params.x} onChange={(v) => updateOp(docId, last.id, { x: v })} />
-            <Slider label="Y" min={0} max={1} step={0.01} value={last.params.y} onChange={(v) => updateOp(docId, last.id, { y: v })} />
-            <Slider label="Ancho" min={0.02} max={1} step={0.01} value={last.params.width} onChange={(v) => updateOp(docId, last.id, { width: v })} />
-            <Slider label="Alto" min={0.02} max={1} step={0.01} value={last.params.height} onChange={(v) => updateOp(docId, last.id, { height: v })} />
+            <Slider label="X" min={0} max={1} step={0.01} scale={100} decimals={1} unit="%" value={last.params.x} onChange={(v) => updateOp(docId, last.id, { x: v })} />
+            <Slider label="Y" min={0} max={1} step={0.01} scale={100} decimals={1} unit="%" value={last.params.y} onChange={(v) => updateOp(docId, last.id, { y: v })} />
+            <Slider label="Ancho" min={0.02} max={1} step={0.01} scale={100} decimals={1} unit="%" value={last.params.width} onChange={(v) => updateOp(docId, last.id, { width: v })} />
+            <Slider label="Alto" min={0.02} max={1} step={0.01} scale={100} decimals={1} unit="%" value={last.params.height} onChange={(v) => updateOp(docId, last.id, { height: v })} />
           </div>
         </div>
       )}

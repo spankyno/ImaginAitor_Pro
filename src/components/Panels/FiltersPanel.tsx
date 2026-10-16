@@ -57,6 +57,7 @@ export function FiltersPanel({ docId }: { docId: string }) {
           label="Intensidad"
           min={0}
           max={100}
+          unit="%"
           value={existing.params.intensity}
           onChange={(v) => updateOp(docId, existing.id, { intensity: v })}
         />

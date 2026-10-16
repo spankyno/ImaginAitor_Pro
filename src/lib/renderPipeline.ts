@@ -1,3 +1,4 @@
+import { resizeTarget, rotatedSize } from './geometry'
 import type { EditOperation, AdjustOp, FilterOp, CropOp, ResizeOp, RotateOp, FlipOp, TextOp, ShapeOp, PixelateOp } from '../types/pipeline'
 
 /**
@@ -95,11 +96,8 @@ function applyCrop(canvas: OffscreenCanvas, _ctx: OffscreenCanvasRenderingContex
 
 function rotateCanvas(canvas: OffscreenCanvas, degrees: number) {
   const rad = (degrees * Math.PI) / 180
-  const sin = Math.abs(Math.sin(rad))
-  const cos = Math.abs(Math.cos(rad))
   const w = canvas.width, h = canvas.height
-  const newW = Math.round(w * cos + h * sin)
-  const newH = Math.round(w * sin + h * cos)
+  const { width: newW, height: newH } = rotatedSize(w, h, degrees)
   const out = new OffscreenCanvas(newW, newH)
   const octx = out.getContext('2d')!
   octx.translate(newW / 2, newH / 2)
@@ -110,25 +108,9 @@ function rotateCanvas(canvas: OffscreenCanvas, degrees: number) {
 
 // ── RESIZE (high quality) ───────────────────────────────────
 async function applyResize(canvas: OffscreenCanvas, op: ResizeOp) {
-  const { mode, width, height, percent, maxSide, keepAspect, quality } = op.params
+  const { quality } = op.params
   const sw = canvas.width, sh = canvas.height
-  let tw = sw, th = sh
-
-  if (mode === 'exact') {
-    tw = Math.round(width); th = Math.round(height)
-    if (keepAspect) {
-      const ratio = sw / sh
-      th = Math.round(tw / ratio)
-    }
-  } else if (mode === 'percent') {
-    tw = Math.round((sw * percent) / 100)
-    th = Math.round((sh * percent) / 100)
-  } else if (mode === 'fit') {
-    const scale = Math.min(1, maxSide / Math.max(sw, sh))
-    tw = Math.round(sw * scale)
-    th = Math.round(sh * scale)
-  }
-  tw = Math.max(1, tw); th = Math.max(1, th)
+  const { width: tw, height: th } = resizeTarget(sw, sh, op.params)
   if (tw === sw && th === sh) return { canvas, ctx: canvas.getContext('2d')! }
 
   const out = progressiveDownscale(canvas, tw, th, quality === 'high')
