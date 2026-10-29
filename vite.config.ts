@@ -7,6 +7,11 @@ export default defineConfig({
   worker: {
     format: 'es',
   },
+  optimizeDeps: {
+    // Los códecs WASM de jSquash localizan su .wasm con new URL(..., import.meta.url);
+    // el pre-bundling de esbuild rompe esa ruta en desarrollo.
+    exclude: ['@jsquash/oxipng', '@jsquash/jpeg', '@jsquash/webp', '@jsquash/avif', '@jsquash/jxl'],
+  },
   build: {
     rollupOptions: {
       output: {

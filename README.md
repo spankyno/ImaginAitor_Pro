@@ -24,6 +24,7 @@ npm run preview
 - **`src/store/useEditorStore.ts`** — Estado global (Zustand): documentos multi-imagen, pila de operaciones por documento, historial undo/redo, disparo de re-render tras cada cambio.
 - **`src/components/Panels/*`** — Un panel por herramienta (Crop, Resize, Transform, Adjust, Filters, Text, Shapes, Pixelate) + Historial (capas).
 - **`src/components/Export/ExportDialog.tsx`** — Exporta vía el mismo worker (`exportBlob`), con selector de formato/calidad/escala y comparación de peso antes/después. Recuerda el último formato/calidad usado en `localStorage`.
+- **`src/lib/compress/`** + **`src/workers/compress.worker.ts`** + **`src/store/useCompressStore.ts`** + **`Panels/CompressPanel.tsx`** — Herramienta **Comprimir** (ver sección propia más abajo).
 - **`src/lib/exif.ts`** — Lee y aplica la orientación EXIF al importar (crítico para fotos de móvil), con fallback manual por si `createImageBitmap({imageOrientation:'from-image'})` no está soportado.
 
 ## Funcionalidades implementadas (MVP)
@@ -43,6 +44,25 @@ npm run preview
 - Exportación PNG/JPEG/WebP/AVIF con control de calidad y escala, mostrando peso original vs exportado.
 - Atajos Ctrl+Z / Ctrl+Shift+Z.
 - Orientación EXIF automática.
+
+## Comprimir
+
+Pestaña "Comprimir" del sidebar. No es una `EditOperation` (no transforma píxeles del pipeline: es la **codificación final**), así que lee el pipeline ya existente y lo codifica en su propio worker.
+
+| Formato | Herramienta (WASM, vía `@jsquash/*`) | Sin pérdida | Con pérdida |
+| --- | --- | --- | --- |
+| PNG | oxipng | ✔ (niveles 1/2/4) | paleta ≤256 colores (`quantize.ts`, propia) + oxipng |
+| JPEG | mozjpeg | ✘ (no existe al recodificar píxeles) | calidad, 4:4:4, progresivo, trellis |
+| WebP | libwebp | ✔ | calidad, method |
+| AVIF | libavif | ✔ (4:4:4) | calidad, speed |
+| JPEG XL | libjxl | ✔ | calidad, effort |
+
+- **Formato de salida**: "Mismo que el original" (según el MIME del archivo subido; GIF/BMP/otros → PNG) o cualquiera de los cinco.
+- **Arquitectura**: `lib/compress/types.ts` (puro) → `codecs.ts` (RGBA → bytes; cada códec se importa dinámicamente, solo se descarga el `.wasm` del formato usado) → `workers/compress.worker.ts` (reutiliza `renderPipeline`) → `lib/compressClient.ts` (worker bajo demanda; **cancelar = `terminate()`**, la única forma de interrumpir WASM) → `useCompressStore` (ajustes persistidos en `localStorage`, debounce, descarga y lote ZIP con `fflate`).
+- **Lienzo**: con la pestaña activa, el lienzo muestra el resultado comprimido (zoom/pan existentes) y "Comparar" contrasta contra el render sin comprimir. Al salir de la pestaña se cancelan trabajos y se liberan los blobs.
+- Imágenes > 6 MP no se recomprimen solas en cada cambio (botón "Comprimir ahora").
+- **Por qué no pngquant / zopflipng / cjxl / ImageMagick / Sharp**: la app es 100 % cliente (sin backend). Sharp y los binarios CLI necesitan Node/SO; ImageMagick-WASM pesa ~15 MB; `libimagequant` (pngquant) es GPL-3; jSquash empaqueta los mismos códecs de Squoosh en WASM con licencia Apache-2.0. `zopflipng` no está disponible en jSquash.
+- **Multihilo**: los códecs eligen su variante multihilo solo si hay `SharedArrayBuffer` (requiere COOP/COEP, que rompería Google Fonts y el tracker). Sin esas cabeceras usan automáticamente la variante de un hilo.
 
 ## Rutas
 
