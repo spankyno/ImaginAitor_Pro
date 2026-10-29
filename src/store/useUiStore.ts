@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type ToolId = 'crop' | 'resize' | 'transform' | 'adjust' | 'filters' | 'text' | 'shapes' | 'pixelate' | 'history'
+export type ToolId = 'crop' | 'resize' | 'transform' | 'adjust' | 'filters' | 'text' | 'shapes' | 'pixelate' | 'compress' | 'history'
 
 interface UiState {
   activeTool: ToolId

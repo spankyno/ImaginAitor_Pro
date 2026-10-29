@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Crop, Maximize2, RotateCw, SlidersHorizontal, Sparkles, Type, Shapes, ScanEye, Layers } from 'lucide-react'
+import { Crop, Maximize2, RotateCw, SlidersHorizontal, Sparkles, Type, Shapes, ScanEye, Layers, Shrink } from 'lucide-react'
 import { useUiStore, type ToolId } from '../../store/useUiStore'
 import { CropPanel } from '../Panels/CropPanel'
 import { ResizePanel } from '../Panels/ResizePanel'
@@ -9,6 +9,7 @@ import { FiltersPanel } from '../Panels/FiltersPanel'
 import { TextPanel } from '../Panels/TextPanel'
 import { ShapesPanel } from '../Panels/ShapesPanel'
 import { PixelatePanel } from '../Panels/PixelatePanel'
+import { CompressPanel } from '../Panels/CompressPanel'
 import { HistoryPanel } from '../Panels/HistoryPanel'
 
 const TABS: { id: ToolId; label: string; icon: typeof Crop }[] = [
@@ -20,6 +21,7 @@ const TABS: { id: ToolId; label: string; icon: typeof Crop }[] = [
   { id: 'text', label: 'Texto', icon: Type },
   { id: 'shapes', label: 'Formas', icon: Shapes },
   { id: 'pixelate', label: 'Ocultar', icon: ScanEye },
+  { id: 'compress', label: 'Comprimir', icon: Shrink },
   { id: 'history', label: 'Capas', icon: Layers },
 ]
 
@@ -48,7 +50,7 @@ export function Sidebar({ docId }: { docId: string }) {
         role="tablist"
         aria-orientation="vertical"
         aria-label="Herramientas de edición"
-        className="flex w-16 flex-col items-center gap-1 border-r border-border-subtle bg-bg-panel py-3"
+        className="flex w-16 flex-col items-center gap-1 overflow-y-auto border-r border-border-subtle bg-bg-panel py-3"
       >
         {TABS.map(({ id, label, icon: Icon }, index) => (
           <button
@@ -84,6 +86,7 @@ export function Sidebar({ docId }: { docId: string }) {
         {tab === 'text' && <TextPanel docId={docId} />}
         {tab === 'shapes' && <ShapesPanel docId={docId} />}
         {tab === 'pixelate' && <PixelatePanel docId={docId} />}
+        {tab === 'compress' && <CompressPanel docId={docId} />}
         {tab === 'history' && <HistoryPanel docId={docId} />}
       </div>
     </div>

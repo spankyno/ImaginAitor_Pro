@@ -3,6 +3,7 @@ import { Loader2, SplitSquareHorizontal, ZoomIn, ZoomOut, Maximize, Scan, Check,
 import { toast } from 'sonner'
 import { useEditorStore } from '../../store/useEditorStore'
 import { useUiStore } from '../../store/useUiStore'
+import { useCompressStore } from '../../store/useCompressStore'
 import { useFitSize } from '../../hooks/useFitSize'
 import { useOriginalPreviewUrl } from '../../hooks/useOriginalPreviewUrl'
 import { useBaseLayerPreview } from '../../hooks/useBaseLayerPreview'
@@ -36,7 +37,13 @@ export function EditorCanvas() {
   const isPixelateTool = activeTool === 'pixelate'
   const isLayerTool = activeTool === 'text' || activeTool === 'shapes'
 
-  const originalUrl = useOriginalPreviewUrl(ds?.doc, compareMode || isCropTool)
+  // Con la herramienta "Comprimir" activa, el lienzo muestra el RESULTADO comprimido
+  // (a resolución completa, con el mismo zoom/pan) y "Comparar" contrasta contra el
+  // render sin comprimir en lugar de contra la imagen original.
+  const compressResult = useCompressStore((s) => s.result)
+  const compressView = activeTool === 'compress' && compressResult && compressResult.docId === activeId ? compressResult : null
+
+  const originalUrl = useOriginalPreviewUrl(ds?.doc, (compareMode && !compressView) || isCropTool)
   const basePreview = useBaseLayerPreview(ds?.doc, isLayerTool)
 
   useEffect(() => { setCropPreview(false) }, [activeId, isCropTool])
@@ -45,7 +52,11 @@ export function EditorCanvas() {
   let displayUrl: string | null = ds?.previewUrl ?? null
   let naturalW = ds?.previewWidth ?? 1
   let naturalH = ds?.previewHeight ?? 1
-  if (!compareMode && isCropTool && !cropPreview && originalUrl && ds) {
+  if (!compareMode && compressView) {
+    displayUrl = compressView.previewUrl
+    naturalW = compressView.width
+    naturalH = compressView.height
+  } else if (!compareMode && isCropTool && !cropPreview && originalUrl && ds) {
     displayUrl = originalUrl
     naturalW = ds.doc.source.width
     naturalH = ds.doc.source.height
@@ -100,6 +111,9 @@ export function EditorCanvas() {
     return <div className="flex h-full items-center justify-center text-text-muted">Selecciona o sube una imagen para empezar</div>
   }
 
+  // Par (antes, después) del comparador.
+  const beforeUrl = compressView ? ds.previewUrl : originalUrl
+  const afterUrl = compressView ? compressView.previewUrl : ds.previewUrl
   const showOverlay = !compareMode && ((isCropTool && !cropPreview) || isPixelateTool || isLayerTool)
 
   return (
@@ -180,7 +194,7 @@ export function EditorCanvas() {
             </div>
           )}
 
-          {compareMode && ds.previewUrl && originalUrl && (
+          {compareMode && afterUrl && beforeUrl && (
             <div
               className="relative h-full w-full select-none"
               onMouseMove={(e) => {
@@ -188,9 +202,9 @@ export function EditorCanvas() {
                 setSliderPos(Math.min(100, Math.max(0, ((e.clientX - rect.left) / rect.width) * 100)))
               }}
             >
-              <img src={ds.previewUrl} alt="" className="h-full w-full object-contain pointer-events-none" draggable={false} />
+              <img src={afterUrl} alt="" className="h-full w-full object-contain pointer-events-none" draggable={false} />
               <div className="absolute inset-0 overflow-hidden flex items-center justify-center" style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}>
-                <img src={originalUrl} alt="" className="h-full w-full object-contain pointer-events-none" draggable={false} />
+                <img src={beforeUrl} alt="" className="h-full w-full object-contain pointer-events-none" draggable={false} />
               </div>
               <div className="absolute top-0 bottom-0 w-0.5 bg-accent" style={{ left: `${sliderPos}%` }}>
                 <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-8 w-8 rounded-full bg-accent flex items-center justify-center text-white shadow-lg">

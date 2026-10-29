@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowLeft, Crop, Maximize2, RotateCw, SlidersHorizontal, Sparkles,
-  Type, Shapes, ScanEye, Layers, ShieldCheck, Gauge, GitBranch,
+  Type, Shapes, ScanEye, Layers, Shrink, ShieldCheck, Gauge, GitBranch,
 } from 'lucide-react'
 import { Footer } from '../components/Layout/Footer'
 
@@ -15,12 +15,13 @@ const TOOLS = [
   { icon: Type, title: 'Texto', desc: 'Fuente, tamaño, color, alineación, rotación, sombra, negrita y cursiva.' },
   { icon: Shapes, title: 'Formas', desc: 'Rectángulo, elipse, flecha y marcador, con relleno y grosor configurables.' },
   { icon: ScanEye, title: 'Pixelar / Difuminar', desc: 'Oculta datos sensibles en capturas: matrículas, correos, nombres…' },
+  { icon: Shrink, title: 'Comprimir', desc: 'PNG, JPEG, WebP, AVIF y JPEG XL, con o sin pérdida (lossless), con vista previa del resultado y compresión por lotes en ZIP. Todo en local.' },
   { icon: Layers, title: 'Historial no destructivo', desc: 'Activa, desactiva, reordena o elimina cualquier paso sin perder calidad.' },
 ]
 
 const STACK = [
   'React', 'TypeScript', 'Vite', 'Tailwind CSS v4', 'Zustand', 'React Router',
-  'Web Workers', 'OffscreenCanvas', 'Comlink', 'react-window', 'EXIF (exifr)',
+  'Web Workers', 'WebAssembly', 'oxipng', 'mozjpeg', 'libwebp', 'libavif', 'libjxl', 'OffscreenCanvas', 'Comlink', 'react-window', 'EXIF (exifr)',
 ]
 
 const PRINCIPLES = [
